@@ -160,8 +160,9 @@ docker compose up -d
 ## Training Resources
 
 - **[TRAINING_GUIDE.md](TRAINING_GUIDE.md)** — Full beginner Python walkthrough with exercises, glossary and error reference
-- **[visuals_scraper_map.html](visuals_scraper_map.html)** — Interactive scraper.py section map
-- **[visuals_docker_architecture.html](visuals_docker_architecture.html)** — Interactive Docker architecture diagram
+- **[Scraper Code Map](https://sufideen.github.io/uk-news-scraper/visuals_scraper_map.html)** — Interactive scraper.py section map (live)
+- **[Docker Architecture](https://sufideen.github.io/uk-news-scraper/visuals_docker_architecture.html)** — Interactive Docker architecture diagram (live)
+- **[Visual Guides Home](https://sufideen.github.io/uk-news-scraper/)** — Landing page for all interactive visuals
 
 ---
 
