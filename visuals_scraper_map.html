@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>scraper.py – Summary Map</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #0f1117;
+      color: #e0e0e0;
+      padding: 30px 20px;
+      min-height: 100vh;
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.6rem;
+      color: #ffffff;
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: 0.82rem;
+      color: #7a8899;
+      margin-bottom: 32px;
+    }
+
+    /* ── TOP FILE BADGE ── */
+    .file-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 28px;
+    }
+    .file-badge .badge {
+      background: #1e2433;
+      border: 2px solid #3d8ef8;
+      border-radius: 10px;
+      padding: 10px 28px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #3d8ef8;
+      letter-spacing: 1px;
+    }
+
+    /* ── MAIN GRID ── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 18px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* ── SECTION CARD ── */
+    .card {
+      background: #1a1f2e;
+      border-radius: 12px;
+      border-left: 4px solid #3d8ef8;
+      padding: 16px 18px;
+      position: relative;
+      transition: transform 0.15s;
+    }
+    .card:hover { transform: translateY(-3px); }
+    .card.green  { border-left-color: #27ae60; }
+    .card.orange { border-left-color: #e67e22; }
+    .card.red    { border-left-color: #e74c3c; }
+    .card.purple { border-left-color: #9b59b6; }
+    .card.teal   { border-left-color: #1abc9c; }
+    .card.yellow { border-left-color: #f1c40f; }
+    .card.pink   { border-left-color: #e91e8c; }
+    .card.blue   { border-left-color: #3d8ef8; }
+
+    .card-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #7a8899;
+      margin-bottom: 8px;
+    }
+    .card-heading {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 10px;
+    }
+
+    /* ── FUNCTION ITEMS ── */
+    .fn-list { list-style: none; }
+    .fn-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 5px 0;
+      border-bottom: 1px solid #262d3d;
+      font-size: 0.84rem;
+      color: #c0cce0;
+    }
+    .fn-list li:last-child { border-bottom: none; }
+    .fn-name {
+      font-family: 'Courier New', monospace;
+      color: #7ecfff;
+      font-weight: 600;
+      white-space: nowrap;
+      min-width: 160px;
+    }
+    .fn-desc { color: #8a9ab5; font-size: 0.8rem; line-height: 1.4; }
+
+    /* ── FLOW ARROW SECTION ── */
+    .flow-section {
+      max-width: 1200px;
+      margin: 28px auto 0;
+      background: #1a1f2e;
+      border-radius: 12px;
+      padding: 20px 24px;
+      border: 1px solid #262d3d;
+    }
+    .flow-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #7a8899;
+      margin-bottom: 14px;
+    }
+    .flow {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0;
+    }
+    .flow-box {
+      background: #222840;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #e0e8ff;
+      border: 1px solid #2e3a55;
+      text-align: center;
+      min-width: 110px;
+    }
+    .flow-box span {
+      display: block;
+      font-size: 0.68rem;
+      font-weight: 400;
+      color: #5a6a85;
+      margin-top: 3px;
+    }
+    .arrow {
+      font-size: 1.2rem;
+      color: #3d8ef8;
+      padding: 0 6px;
+      flex-shrink: 0;
+    }
+
+    /* ── CONCEPTS PILL ROW ── */
+    .concepts-section {
+      max-width: 1200px;
+      margin: 18px auto 0;
+      background: #1a1f2e;
+      border-radius: 12px;
+      padding: 18px 24px;
+      border: 1px solid #262d3d;
+    }
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .pill {
+      background: #222840;
+      border: 1px solid #2e3a55;
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 0.78rem;
+      color: #a0b4d0;
+      font-family: 'Courier New', monospace;
+    }
+
+    /* ── SOURCE TAGS ── */
+    .source-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .src-tag {
+      border-radius: 6px;
+      padding: 5px 14px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #fff;
+    }
+    .bbc  { background: #bb1919; }
+    .grd  { background: #052962; }
+    .ind  { background: #e8173d; }
+    .sky  { background: #003e7e; }
+
+    /* ── OUTPUT BADGES ── */
+    .out-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .out-badge {
+      border-radius: 6px;
+      padding: 5px 12px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+    .csv  { background: #1a6b35; color: #7ef7a0; }
+    .html { background: #7a3200; color: #ffb07c; }
+    .json { background: #1a4a7a; color: #7ecfff; }
+    .odt  { background: #4a1a7a; color: #d4a4ff; }
+
+    footer {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 0.72rem;
+      color: #3d4a5c;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>scraper.py — Summary Map</h1>
+  <p class="subtitle">UK News Scraper · Internal Training Reference · Python Beginners</p>
+
+  <div class="file-badge">
+    <div class="badge">📄 scraper.py</div>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="grid">
+
+    <!-- Imports -->
+    <div class="card blue">
+      <div class="card-title">Section 1</div>
+      <div class="card-heading">Imports</div>
+      <ul class="fn-list">
+        <li><span class="fn-name">csv, json, os</span><span class="fn-desc">Built-in standard library</span></li>
+        <li><span class="fn-name">time, logging, random</span><span class="fn-desc">Built-in standard library</span></li>
+        <li><span class="fn-name">dataclasses</span><span class="fn-desc">Data containers with auto-init</span></li>
+        <li><span class="fn-name">datetime / UTC</span><span class="fn-desc">Timezone-aware timestamps</span></li>
+        <li><span class="fn-name">requests</span><span class="fn-desc">HTTP web requests (3rd party)</span></li>
+        <li><span class="fn-name">feedparser</span><span class="fn-desc">RSS/Atom feed parser (3rd party)</span></li>
+        <li><span class="fn-name">BeautifulSoup</span><span class="fn-desc">HTML parser (3rd party)</span></li>
+        <li><span class="fn-name">dateutil</span><span class="fn-desc">Flexible date parsing (3rd party)</span></li>
+      </ul>
+    </div>
+
+    <!-- Configuration -->
+    <div class="card yellow">
+      <div class="card-title">Section 2</div>
+      <div class="card-heading">Configuration Constants</div>
+      <ul class="fn-list">
+        <li><span class="fn-name">USER_AGENT</span><span class="fn-desc">Identifies scraper to web servers</span></li>
+        <li><span class="fn-name">REQUEST_TIMEOUT</span><span class="fn-desc">15s max wait per request</span></li>
+        <li><span class="fn-name">MIN_DELAY / MAX_DELAY</span><span class="fn-desc">2–5s polite pause range</span></li>
+        <li><span class="fn-name">OUTPUT_DIR/CSV/HTML/JSON/ODT</span><span class="fn-desc">Output file paths</span></li>
+        <li><span class="fn-name">HEADERS</span><span class="fn-desc">HTTP headers sent with requests</span></li>
+        <li><span class="fn-name">logging.basicConfig()</span><span class="fn-desc">Timestamps + severity levels</span></li>
+      </ul>
+    </div>
+
+    <!-- Data Model -->
+    <div class="card purple">
+      <div class="card-title">Section 3</div>
+      <div class="card-heading">Article Data Model</div>
+      <ul class="fn-list">
+        <li><span class="fn-name">@dataclass Article</span><span class="fn-desc">Blueprint for one article</span></li>
+        <li><span class="fn-name">.source</span><span class="fn-desc">BBC News, Guardian, etc.</span></li>
+        <li><span class="fn-name">.title</span><span class="fn-desc">Headline text</span></li>
+        <li><span class="fn-name">.url</span><span class="fn-desc">Link to article</span></li>
+        <li><span class="fn-name">.summary</span><span class="fn-desc">Lead paragraph</span></li>
+        <li><span class="fn-name">.author</span><span class="fn-desc">Byline / journalist name</span></li>
+        <li><span class="fn-name">.published_date</span><span class="fn-desc">ISO 8601 timestamp</span></li>
+        <li><span class="fn-name">CSV_FIELDNAMES</span><span class="fn-desc">Auto-derived from field names</span></li>
+      </ul>
+    </div>
+
+    <!-- Utilities -->
+    <div class="card teal">
+      <div class="card-title">Section 4</div>
+      <div class="card-heading">Utility / Helper Functions</div>
+      <ul class="fn-list">
+        <li><span class="fn-name">polite_get(url)</span><span class="fn-desc">Safe HTTP GET with error handling</span></li>
+        <li><span class="fn-name">parse_date(raw)</span><span class="fn-desc">Normalise any date → ISO 8601</span></li>
+        <li><span class="fn-name">delay()</span><span class="fn-desc">Random 2–5s polite pause</span></li>
+        <li><span class="fn-name">parse_feed(url)</span><span class="fn-desc">Fetch and parse RSS/Atom feed</span></li>
+        <li><span class="fn-name">strip_html(raw)</span><span class="fn-desc">Remove HTML tags from text</span></li>
+      </ul>
+    </div>
+
+    <!-- Scrapers -->
+    <div class="card red">
+      <div class="card-title">Sections 5–7</div>
+      <div class="card-heading">Per-Source Scrapers</div>
+      <ul class="fn-list">
+        <li><span class="fn-name">scrape_bbc()</span><span class="fn-desc">RSS + per-page author scrape</span></li>
+        <li><span class="fn-name">_bbc_get_author(url)</span><span class="fn-desc">CSS selector fallback for byline</span></li>
+        <li><span class="fn-name">scrape_guardian()</span><span class="fn-desc">Guardian Content JSON API</span></li>
+        <li><span class="fn-name">scrape_independent()</span><span class="fn-desc">RSS + HTML author fallback</span></li>
+        <li><span class="fn-name">_independent_get_author()</span><span class="fn-desc">CSS selector + meta tag</span></li>
+        <li><span class="fn-name">scrape_sky_news()</span><span class="fn-desc">RSS + HTML author fallback</span></li>
+        <li><span class="fn-name">_sky_get_author()</span><span class="fn-desc">CSS selector + meta tag</span></li>
+      </ul>
+      <div class="source-row" style="margin-top:12px;">
+        <span class="src-tag bbc">BBC News</span>
+        <span class="src-tag grd">The Guardian</span>
+        <span class="src-tag ind">Independent</span>
+        <span class="src-tag sky">Sky News</span>
+      </div>
+    </div>
+
+    <!-- Output Writers -->
+    <div class="card orange">
+      <div class="card-title">Section 8</div>
+      <div class="card-heading">Output Writers</div>
+      <ul class="fn-list">
+        <li><span class="fn-name">save_to_csv()</span><span class="fn-desc">DictWriter, column headers</span></li>
+        <li><span class="fn-name">save_to_html()</span><span class="fn-desc">f-string template, styled table</span></li>
+        <li><span class="fn-name">save_to_json()</span><span class="fn-desc">json.dump, list comprehension</span></li>
+        <li><span class="fn-name">save_to_odt()</span><span class="fn-desc">odfpy LibreOffice document</span></li>
+      </ul>
+      <div class="out-row">
+        <span class="out-badge csv">.csv</span>
+        <span class="out-badge html">.html</span>
+        <span class="out-badge json">.json</span>
+        <span class="out-badge odt">.odt</span>
+      </div>
+    </div>
+
+    <!-- Email Builder -->
+    <div class="card pink">
+      <div class="card-title">Section 9</div>
+      <div class="card-heading">Email HTML Builder</div>
+      <ul class="fn-list">
+        <li><span class="fn-name">get_html_email_body()</span><span class="fn-desc">Gmail-safe inline CSS email</span></li>
+        <li><span class="fn-name">defaultdict(list)</span><span class="fn-desc">Groups articles by source</span></li>
+        <li><span class="fn-name">[:10] slice</span><span class="fn-desc">Top 10 articles per source</span></li>
+        <li><span class="fn-name">Zebra striping</span><span class="fn-desc">Alternating row colours</span></li>
+        <li><span class="fn-name">Inline CSS only</span><span class="fn-desc">No &lt;style&gt; blocks (Gmail strips)</span></li>
+        <li><span class="fn-name">700px max-width</span><span class="fn-desc">Email client compatible</span></li>
+      </ul>
+    </div>
+
+    <!-- Main + Entry Point -->
+    <div class="card green">
+      <div class="card-title">Section 10</div>
+      <div class="card-heading">main() &amp; Entry Point</div>
+      <ul class="fn-list">
+        <li><span class="fn-name">scrapers = [...]</span><span class="fn-desc">List of (name, function) tuples</span></li>
+        <li><span class="fn-name">for name, fn in scrapers</span><span class="fn-desc">Tuple unpacking</span></li>
+        <li><span class="fn-name">fn()</span><span class="fn-desc">Call function stored in variable</span></li>
+        <li><span class="fn-name">.extend(results)</span><span class="fn-desc">Merge articles into master list</span></li>
+        <li><span class="fn-name">try/except</span><span class="fn-desc">Crash-safe per-source handling</span></li>
+        <li><span class="fn-name">if __name__ == "__main__"</span><span class="fn-desc">Only runs when executed directly</span></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- EXECUTION FLOW -->
+  <div class="flow-section">
+    <div class="flow-title">Execution Flow</div>
+    <div class="flow">
+      <div class="flow-box">main()<span>entry point</span></div>
+      <span class="arrow">→</span>
+      <div class="flow-box">scrape_bbc()<span>RSS + per-page</span></div>
+      <span class="arrow">→</span>
+      <div class="flow-box">scrape_guardian()<span>JSON API</span></div>
+      <span class="arrow">→</span>
+      <div class="flow-box">scrape_independent()<span>RSS + fallback</span></div>
+      <span class="arrow">→</span>
+      <div class="flow-box">scrape_sky_news()<span>RSS + fallback</span></div>
+      <span class="arrow">→</span>
+      <div class="flow-box">save outputs<span>CSV · HTML · JSON · ODT</span></div>
+    </div>
+  </div>
+
+  <!-- KEY CONCEPTS -->
+  <div class="concepts-section">
+    <div class="flow-title">Key Python Concepts Used</div>
+    <div class="pill-row">
+      <span class="pill">@dataclass</span>
+      <span class="pill">try/except</span>
+      <span class="pill">list comprehension</span>
+      <span class="pill">dict.get(key, default)</span>
+      <span class="pill">defaultdict</span>
+      <span class="pill">f-strings</span>
+      <span class="pill">with open() as f:</span>
+      <span class="pill">nested functions</span>
+      <span class="pill">functions in variables</span>
+      <span class="pill">tuple unpacking</span>
+      <span class="pill">list slicing [:10]</span>
+      <span class="pill">ternary expression</span>
+      <span class="pill">Optional[T]</span>
+      <span class="pill">if __name__ == "__main__"</span>
+      <span class="pill">logging</span>
+      <span class="pill">CSS selectors</span>
+      <span class="pill">RSS / feedparser</span>
+      <span class="pill">polite scraping</span>
+    </div>
+  </div>
+
+  <footer>scraper.py · UK News Scraper · Internal Training Document</footer>
+
+</body>
+</html>
