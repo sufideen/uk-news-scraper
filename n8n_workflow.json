@@ -76,8 +76,8 @@
       "position": [740, 300],
       "credentials": {
         "gmailOAuth2": {
-          "id": "REPLACE_WITH_CREDENTIAL_ID",
-          "name": "Gmail – mawarajudeen10"
+          "id": "yLZY10eaLhTI3uFN",
+          "name": "Gmail account 2"
         }
       }
     },
@@ -106,8 +106,8 @@
       "position": [500, 520],
       "credentials": {
         "gmailOAuth2": {
-          "id": "REPLACE_WITH_CREDENTIAL_ID",
-          "name": "Gmail – mawarajudeen10"
+          "id": "yLZY10eaLhTI3uFN",
+          "name": "Gmail account 2"
         }
       }
     },
