@@ -1,0 +1,156 @@
+{
+  "name": "UK News Digest – Daily Gmail (AM & PM)",
+  "nodes": [
+
+    {
+      "parameters": {
+        "content": "## UK News Digest – Daily Gmail\n\n**Flow:**\nSchedule → Call Scraper API → Send Gmail\n\n**Fires:** 7:00 AM and 6:00 PM (Europe/London)\n**Sends to:** mawarajudeen10@gmail.com\n**Content:** Top 10 articles per source\n(BBC, Guardian, Independent, Sky News)\n\n---\n### One-time setup\n1. **Gmail credential**\n   → Settings → Credentials → New → Gmail OAuth 2.0\n   → Sign in with mawarajudeen10@gmail.com\n   → Name it **Gmail – mawarajudeen10**\n   → Open both Gmail nodes and select that credential\n\n2. **Scraper sidecar must be running**\n   From terminal: `cd /home/sufideen && docker compose up -d`\n   The scraper container exposes port 8765 on the Docker network.\n   N8N reaches it at http://scraper:8765/run\n\n3. **Test before activating**\n   → Click **Test workflow** (top toolbar)\n   → Check your inbox for the digest email\n\n4. **Activate**\n   → Toggle the **Active** switch (top-right)",
+        "height": 500,
+        "width": 440,
+        "color": 5
+      },
+      "id": "sticky-setup",
+      "name": "Setup Instructions",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-240, 60]
+    },
+
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 7 * * *"
+            },
+            {
+              "field": "cronExpression",
+              "expression": "0 18 * * *"
+            }
+          ]
+        }
+      },
+      "id": "node-schedule",
+      "name": "Every Day 7AM & 6PM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [260, 300]
+    },
+
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://scraper:8765/run",
+        "options": {
+          "timeout": 900000,
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "id": "node-http",
+      "name": "Call Scraper API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [500, 300]
+    },
+
+    {
+      "parameters": {
+        "sendTo": "mawarajudeen10@gmail.com",
+        "subject": "={{ $json.subject }}",
+        "emailType": "html",
+        "message": "={{ $json.htmlBody }}",
+        "options": {
+          "replyTo": "mawarajudeen10@gmail.com",
+          "appendAttribution": false
+        }
+      },
+      "id": "node-gmail",
+      "name": "Send Digest Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [740, 300],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "Gmail – mawarajudeen10"
+        }
+      }
+    },
+
+    {
+      "parameters": {},
+      "id": "node-error-trigger",
+      "name": "On Workflow Error",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [260, 520]
+    },
+
+    {
+      "parameters": {
+        "sendTo": "mawarajudeen10@gmail.com",
+        "subject": "=⚠️ UK News Scraper FAILED – {{ $now.setZone('Europe/London').toFormat('dd MMM yyyy HH:mm') }} (London)",
+        "emailType": "html",
+        "message": "=<div style=\"font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px;background:#fff8f8;border:2px solid #f5c6c6;border-radius:8px;\">\n  <h2 style=\"color:#cc0000;margin-top:0;\">&#9888; UK News Scraper Failed</h2>\n  <table style=\"width:100%;border-collapse:collapse;font-size:14px;\">\n    <tr><td style=\"padding:6px 0;color:#666;width:120px;\">Time</td><td style=\"padding:6px 0;\">{{ $now.setZone('Europe/London').toISO() }}</td></tr>\n    <tr><td style=\"padding:6px 0;color:#666;\">Error</td><td style=\"padding:6px 0;color:#cc0000;\">{{ $json.execution.error.message }}</td></tr>\n    <tr><td style=\"padding:6px 0;color:#666;\">Failed node</td><td style=\"padding:6px 0;\">{{ $json.execution.lastNodeExecuted }}</td></tr>\n    <tr><td style=\"padding:6px 0;color:#666;\">Execution ID</td><td style=\"padding:6px 0;font-family:monospace;font-size:12px;\">{{ $json.execution.id }}</td></tr>\n  </table>\n  <p style=\"margin-top:16px;font-size:12px;color:#999;\">Open the N8N executions log to see the full stack trace.</p>\n</div>",
+        "options": {}
+      },
+      "id": "node-error-email",
+      "name": "Send Error Alert",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [500, 520],
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REPLACE_WITH_CREDENTIAL_ID",
+          "name": "Gmail – mawarajudeen10"
+        }
+      }
+    },
+
+    {
+      "parameters": {
+        "content": "### Architecture\n`scraper` container runs `scraper_server.py` on **port 8765** inside the Docker network.\n\nN8N calls `http://scraper:8765/run` via the HTTP Request node.\nThe scraper returns JSON with `subject` + `htmlBody`.\n\nNo shell access needed — works with the hardened N8N image.",
+        "height": 140,
+        "width": 400,
+        "color": 4
+      },
+      "id": "sticky-arch",
+      "name": "Architecture Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [460, 100]
+    }
+
+  ],
+
+  "connections": {
+    "Every Day 7AM & 6PM": {
+      "main": [[{ "node": "Call Scraper API",  "type": "main", "index": 0 }]]
+    },
+    "Call Scraper API": {
+      "main": [[{ "node": "Send Digest Email", "type": "main", "index": 0 }]]
+    },
+    "On Workflow Error": {
+      "main": [[{ "node": "Send Error Alert",  "type": "main", "index": 0 }]]
+    }
+  },
+
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/London",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+
+  "staticData": null,
+  "tags": ["news", "gmail", "scraper", "scheduled"],
+  "meta": {
+    "templateCredsSetupCompleted": false
+  }
+}
