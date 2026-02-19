@@ -1,4 +1,4 @@
-This project is about using Claude to write python scripts and N8n workflows. 
+This project is about using Claude Code to write python scripts and N8n workflows. 
 A basic knowlege of prompt engineering and Claude Code will useful.
 It is used a training for anyone who wants to learn Python , Claude and N8N in the context of AI.
 The training guide breaks down the Python code 
