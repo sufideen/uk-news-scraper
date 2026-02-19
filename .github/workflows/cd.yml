@@ -1,10 +1,12 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # CD Pipeline — UK News Scraper
-# Runs on release tags (v*.*.*) — deploy to production server
+# Triggered by version tags: v*.*.*
 #
-# Jobs:
-#   1. release-build  — build & push versioned Docker image to GHCR
-#   2. deploy         — SSH into server, pull new image, restart containers
+# Flow:
+#   tag v1.2.3
+#     → build versioned image → push to GHCR
+#     → SSH deploy to production server
+#     → healthcheck verification
 # ─────────────────────────────────────────────────────────────────────────────
 
 name: CD — Release & Deploy
@@ -24,12 +26,15 @@ jobs:
   release-build:
     name: Build & Push Release Image
     runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: http://localhost:5678
     permissions:
       contents: read
       packages: write
 
     outputs:
-      image-tag: ${{ steps.meta.outputs.version }}
+      image-version: ${{ steps.meta.outputs.version }}
 
     steps:
       - name: Checkout code
@@ -66,12 +71,14 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  # ── JOB 2: DEPLOY TO PRODUCTION SERVER ──────────────────────────────────────
+  # ── JOB 2: DEPLOY TO PRODUCTION SERVER (SSH) ────────────────────────────────
   deploy:
-    name: Deploy to Server (SSH)
+    name: Deploy to Production Server
     runs-on: ubuntu-latest
     needs: release-build
-    environment: production
+    environment:
+      name: production
+      url: http://localhost:5678
 
     steps:
       - name: Deploy via SSH
@@ -82,16 +89,19 @@ jobs:
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           port: ${{ secrets.DEPLOY_PORT || 22 }}
           script: |
-            echo "=== Pulling latest image ==="
+            echo "=== Pulling image: ${{ needs.release-build.outputs.image-version }} ==="
             docker pull ghcr.io/${{ github.repository_owner }}/uk-news-scraper:latest
 
             echo "=== Restarting scraper container ==="
             cd /home/sufideen
             docker compose up -d --no-deps --force-recreate scraper
 
-            echo "=== Verifying healthcheck ==="
+            echo "=== Healthcheck ==="
             sleep 8
             curl -sf http://localhost:8765/health && echo "Scraper healthy" || exit 1
 
-            echo "=== Deployment complete ==="
-            docker ps --filter name=scraper --format "table {{.Names}}\t{{.Status}}\t{{.Image}}"
+            echo "=== N8N status ==="
+            docker ps --filter name=n8n --filter name=scraper \
+              --format "table {{.Names}}\t{{.Status}}\t{{.Image}}"
+
+            echo "=== Deployment complete: ${{ github.ref_name }} ==="
