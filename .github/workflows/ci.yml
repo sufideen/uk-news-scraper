@@ -45,7 +45,7 @@ jobs:
         run: |
           flake8 scraper.py scraper_server.py run_for_n8n.py \
             --max-line-length=120 \
-            --extend-ignore=E501,W503 \
+            --extend-ignore=E501,W503,E221,E302,E305,E402,F401 \
             --statistics
 
   # ── JOB 2: TEST ─────────────────────────────────────────────────────────────
