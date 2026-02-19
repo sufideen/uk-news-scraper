@@ -1,0 +1,26 @@
+# Python sidecar for UK News Scraper.
+# Runs scraper_server.py on port 8765.
+# N8N calls GET http://scraper:8765/run to trigger scraping.
+# Build context: repo root (uk-news-scraper/)
+
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# Install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy scraper source files
+COPY scraper.py .
+COPY scraper_server.py .
+
+# Create output directory
+RUN mkdir -p output/digests
+
+EXPOSE 8765
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+  CMD python3 -c "import urllib.request; urllib.request.urlopen('http://localhost:8765/health')"
+
+CMD ["python3", "-u", "scraper_server.py"]
