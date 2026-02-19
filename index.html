@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UK News Scraper — Visual Guides</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0d1117;
+      color: #c9d1d9;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .hero h1 {
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: #f0f6fc;
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    .hero p {
+      font-size: 1.05rem;
+      color: #8b949e;
+      max-width: 560px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #1f6feb;
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-radius: 20px;
+      padding: 3px 10px;
+      margin-bottom: 16px;
+    }
+
+    .cards {
+      display: flex;
+      gap: 28px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 900px;
+      width: 100%;
+    }
+
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 36px 32px;
+      width: 380px;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .card:hover {
+      border-color: #58a6ff;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 32px rgba(88, 166, 255, 0.15);
+    }
+
+    .card-icon {
+      font-size: 2.4rem;
+      line-height: 1;
+    }
+
+    .card h2 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #f0f6fc;
+    }
+
+    .card p {
+      font-size: 0.9rem;
+      color: #8b949e;
+      line-height: 1.6;
+    }
+
+    .card-arrow {
+      margin-top: auto;
+      font-size: 0.85rem;
+      color: #58a6ff;
+      font-weight: 500;
+    }
+
+    .tech-stack {
+      margin-top: 60px;
+      text-align: center;
+    }
+
+    .tech-stack p {
+      font-size: 0.8rem;
+      color: #484f58;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .pill {
+      background: #21262d;
+      border: 1px solid #30363d;
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 0.78rem;
+      color: #8b949e;
+    }
+
+    .github-link {
+      margin-top: 40px;
+      font-size: 0.85rem;
+      color: #484f58;
+    }
+
+    .github-link a {
+      color: #58a6ff;
+      text-decoration: none;
+    }
+
+    .github-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="hero">
+    <div class="badge">Training Resource</div>
+    <h1>UK News Scraper</h1>
+    <p>Interactive visual guides for understanding the Python scraper architecture and Docker infrastructure.</p>
+  </div>
+
+  <div class="cards">
+
+    <a href="visuals_scraper_map.html" class="card">
+      <div class="card-icon">🗺️</div>
+      <h2>Scraper Code Map</h2>
+      <p>
+        Interactive breakdown of <code>scraper.py</code> — all 8 sections colour-coded,
+        with execution flow, Python concepts, and beginner-friendly explanations.
+      </p>
+      <div class="card-arrow">View Scraper Map →</div>
+    </a>
+
+    <a href="visuals_docker_architecture.html" class="card">
+      <div class="card-icon">🐳</div>
+      <h2>Docker Architecture</h2>
+      <p>
+        Visual diagram of the full Docker stack — N8N container, Python scraper sidecar,
+        volumes, port bindings, and the 8-step end-to-end data flow.
+      </p>
+      <div class="card-arrow">View Architecture →</div>
+    </a>
+
+  </div>
+
+  <div class="tech-stack">
+    <p>Built with</p>
+    <div class="pills">
+      <span class="pill">Python 3.12</span>
+      <span class="pill">BeautifulSoup4</span>
+      <span class="pill">feedparser</span>
+      <span class="pill">N8N</span>
+      <span class="pill">Docker</span>
+      <span class="pill">Gmail OAuth2</span>
+      <span class="pill">GitHub Actions</span>
+      <span class="pill">GHCR</span>
+    </div>
+  </div>
+
+  <div class="github-link">
+    <a href="https://github.com/sufideen/uk-news-scraper" target="_blank">github.com/sufideen/uk-news-scraper</a>
+    &nbsp;·&nbsp; Generated with <a href="https://claude.ai/claude-code" target="_blank">Claude Code</a>
+  </div>
+
+</body>
+</html>
