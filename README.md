@@ -176,3 +176,13 @@ docker compose up -d
 ---
 
 *Generated with [Claude Code](https://claude.ai/claude-code) · BBC News · The Guardian · The Independent · Sky News*
+
+## Data handling and privacy
+
+- The workflow sends a digest to a single recipient address. The address in
+  `n8n_workflow.json` is a placeholder (`you@example.com`); set your own in n8n.
+  Do not commit real addresses or credentials.
+- The scraper reads only publicly available headlines and links from the listed news
+  sites and stores no personal data. Respect each site's terms of service and
+  `robots.txt` before running it.
+- Gmail access is granted through n8n's OAuth credential store, never in this repo.
